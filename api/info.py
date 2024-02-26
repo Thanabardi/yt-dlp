@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps(response).encode())
+            self.wfile.write(bytes(json.dumps(response), 'utf-8'))
         except Exception as e:
             self.send_error(500, e)
         return
