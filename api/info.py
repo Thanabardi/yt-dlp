@@ -4,9 +4,10 @@ import yt_dlp
 
 
 def video_info(platform, id):
-    match platform:
-        case "youtube":
-            url = f"https://www.youtube.com/watch?v={id}"
+    if platform == "youtube":
+        url = f"https://www.youtube.com/watch?v={id}"
+    else:
+        raise ValueError('unsupported platform')
 
     with yt_dlp.YoutubeDL() as ydl:
         info = ydl.extract_info(url, download=False)
