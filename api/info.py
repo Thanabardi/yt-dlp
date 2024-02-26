@@ -7,7 +7,8 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         query = parse_qs(urlparse(self.path).query)
         self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
+        self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps(query).encode('utf-8'))
+        response = json.dumps(query)
+        self.wfile.write(response.encode('utf-8'))
         return
