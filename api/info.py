@@ -8,8 +8,8 @@ def video_info(platform, id):
         url = f"https://www.youtube.com/watch?v={id}"
     else:
         raise ValueError('unsupported platform')
-
-    with yt_dlp.YoutubeDL() as ydl:
+    ydl_opts = {"quiet": True, "no_warnings": True}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
         return ydl.sanitize_info(info)
 
