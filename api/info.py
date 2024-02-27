@@ -28,11 +28,11 @@ class handler(BaseHTTPRequestHandler):
             return
 
         try:
-            response = video_info(query["platform"], query["id"])
+            # response = video_info(query["platform"], query["id"])
             self.send_response(200)
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
-            self.wfile.write(json.dumps(response).encode('utf-8'))
+            self.wfile.write("hi".encode('utf-8'))
         except Exception as e:
             self.send_error(500, e)
         return
