@@ -12,6 +12,7 @@ def video_info(platform, id, quality):
     else:
         raise ValueError(f'unsupported platform "{platform}"')
     ydl_opts = {"quiet": True, "no_warnings": True,
+                "cachedir": False,
                 "format": f"bestaudio[ext=webm]+bestvideo[height<={quality}][ext=webm]"}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
