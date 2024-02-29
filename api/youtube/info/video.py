@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qsl, unquote
 import json
 import yt_dlp
 from datetime import datetime
@@ -15,19 +16,20 @@ def video_info(id, quality):
             f"https://www.youtube.com/watch?v={id}", download=False)
         sanitized_info = ydl.sanitize_info(info)
         result = {
-            "id": sanitized_info["id"],
-            "webpage_url": sanitized_info["webpage_url"],
-            "title": sanitized_info["title"],
-            "thumbnail": sanitized_info["thumbnail"],
-            "upload_date": sanitized_info["upload_date"],
-            "channel": sanitized_info["channel"],
-            "channel_id": sanitized_info["channel_id"],
-            "channel_url": sanitized_info["channel_url"],
-            "duration": sanitized_info["duration"],
-            "audio_url": sanitized_info["requested_formats"][0]["url"],
-            "audio_format": sanitized_info["requested_formats"][0]["format"].split(" - ")[1],
-            "video_url": sanitized_info["requested_formats"][1]["url"],
-            "video_format": sanitized_info["requested_formats"][1]["format"].split(" - ")[1],
+            "id": sanitized_info.get("id"),
+            "webpage_url": sanitized_info.get("webpage_url"),
+            "title": sanitized_info.get("title"),
+            "thumbnail": sanitized_info.get("thumbnail"),
+            "upload_date": sanitized_info.get("upload_date"),
+            "channel": sanitized_info.get("channel"),
+            "channel_id": sanitized_info.get("channel_id"),
+            "channel_url": sanitized_info.get("channel_url"),
+            "duration": sanitized_info.get("duration"),
+            "audio_url": sanitized_info.get("requested_formats")[0].get("url"),
+            "audio_format": sanitized_info.get("requested_formats")[0].get("format").split(" - ")[1],
+            "video_url": sanitized_info.get("requested_formats")[1].get("url"),
+            "video_format": sanitized_info.get("requested_formats")[1].get("format").split(" - ")[1],
+            "type": "video",
             "lookup_timestamp": datetime.now().timestamp()
         }
         return result
@@ -35,22 +37,16 @@ def video_info(id, quality):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        try:
-            query_str = self.path.split("?", 1)[1]
-            query = dict(q.split("=") for q in query_str.split("&"))
-        except:
-            self.send_error(422, "invalid parameters")
-            return
-
+        query = dict(parse_qsl(unquote(urlparse(self.path).query)))
         if "id" not in query:
-            self.send_error(422, "invalid parameters")
+            self.send_error(422, "missing parameter 'id'")
             return
 
         try:
             quality = DEFAULT_QUALITY
             if "quality" in query:
-                quality = query["quality"]
-            response = video_info(query["id"], quality)
+                quality = query.get("quality")
+            response = video_info(query.get("id"), quality)
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()

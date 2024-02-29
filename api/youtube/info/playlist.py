@@ -1,41 +1,40 @@
 from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qsl, unquote
 import json
 import yt_dlp
 from datetime import datetime
 
-DEFAULT_QUALITY = "1080"
 
-
-def video_info(id, quality):
+def playlist_info(id):
     ydl_opts = {"cachedir": False,
-                "extract_flat": "in_playlist",
-                "format": f"bestaudio[ext=webm]+bestvideo[height<={quality}][ext=webm]"}
+                "extract_flat": "in_playlist"}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(
             f"https://www.youtube.com/playlist?list={id}", download=False)
         sanitized_info = ydl.sanitize_info(info)
         videos = []
-        for video in sanitized_info["entries"]:
+        for video in sanitized_info.get("entries"):
             videos.append({
-                "id": video["id"],
-                "webpage_url": video["url"],
-                "title": video["title"],
-                "thumbnail": video["thumbnails"][-1]["url"],
-                "channel": video["channel"],
-                "channel_id": video["channel_id"],
-                "channel_url": video["channel_url"],
-                "duration": video["duration"],
+                "id": video.get("id"),
+                "webpage_url": video.get("url"),
+                "title": video.get("title"),
+                "thumbnail": video.get("thumbnails")[-1].get("url"),
+                "channel": video.get("channel"),
+                "channel_id": video.get("channel_id"),
+                "channel_url": video.get("channel_url"),
+                "duration": video.get("duration"),
             })
         result = {
-            "id": sanitized_info["id"],
-            "webpage_url": sanitized_info["webpage_url"],
-            "title": sanitized_info["title"],
-            "thumbnail": sanitized_info["thumbnails"][-2]["url"],
-            "modified_date": sanitized_info["modified_date"],
-            "playlist_count": sanitized_info["playlist_count"],
-            "channel": sanitized_info["channel"],
-            "channel_id": sanitized_info["channel_id"],
-            "channel_url": sanitized_info["channel_url"],
+            "id": sanitized_info.get("id"),
+            "webpage_url": sanitized_info.get("webpage_url"),
+            "title": sanitized_info.get("title"),
+            "thumbnail": sanitized_info.get("thumbnails")[-2].get("url"),
+            "modified_date": sanitized_info.get("modified_date"),
+            "playlist_count": sanitized_info.get("playlist_count"),
+            "channel": sanitized_info.get("channel"),
+            "channel_id": sanitized_info.get("channel_id"),
+            "channel_url": sanitized_info.get("channel_url"),
+            "type": "playlist",
             "videos": videos,
             "lookup_timestamp": datetime.now().timestamp()
         }
@@ -44,22 +43,13 @@ def video_info(id, quality):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        try:
-            query_str = self.path.split("?", 1)[1]
-            query = dict(q.split("=") for q in query_str.split("&"))
-        except:
-            self.send_error(422, "invalid parameters")
-            return
-
+        query = dict(parse_qsl(unquote(urlparse(self.path).query)))
         if "id" not in query:
-            self.send_error(422, "invalid parameters")
+            self.send_error(422, "missing parameter 'id'")
             return
 
         try:
-            quality = DEFAULT_QUALITY
-            if "quality" in query:
-                quality = query["quality"]
-            response = video_info(query["id"], quality)
+            response = playlist_info(query.get("id"))
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
