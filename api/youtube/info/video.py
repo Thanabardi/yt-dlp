@@ -9,7 +9,6 @@ DEFAULT_QUALITY = "1080"
 def video_info(id, quality):
     ydl_opts = {"cachedir": False,
                 "extract_flat": "in_playlist",
-                "source_address": "::",
                 "format": f"bestaudio[ext=webm]+bestvideo[height<={quality}][ext=webm]"}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(
