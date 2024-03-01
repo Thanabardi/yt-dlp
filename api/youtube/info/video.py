@@ -24,6 +24,8 @@ def video_info(id, quality):
             "channel_id": sanitized_info.get("channel_id"),
             "channel_url": sanitized_info.get("channel_url"),
             "duration": sanitized_info.get("duration"),
+            "description": sanitized_info.get("description"),
+            "chapters": sanitized_info.get("chapters"),
             "audio_url": sanitized_info.get("requested_formats")[0].get("url"),
             "audio_format": sanitized_info.get("requested_formats")[0].get("format").split(" - ")[1],
             "video_url": sanitized_info.get("requested_formats")[1].get("url"),
