@@ -2,7 +2,6 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qsl, unquote
 import json
 import yt_dlp
-from datetime import datetime
 
 
 def playlist_info(id):
@@ -16,7 +15,7 @@ def playlist_info(id):
         for video in sanitized_info.get("entries"):
             videos.append({
                 "id": video.get("id"),
-                "webpage_url": video.get("url"),
+                "url": video.get("url"),
                 "title": video.get("title"),
                 "thumbnail": video.get("thumbnails")[-1].get("url"),
                 "channel": video.get("channel"),
@@ -26,7 +25,7 @@ def playlist_info(id):
             })
         result = {
             "id": sanitized_info.get("id"),
-            "webpage_url": sanitized_info.get("webpage_url"),
+            "url": sanitized_info.get("webpage_url"),
             "title": sanitized_info.get("title"),
             "thumbnail": sanitized_info.get("thumbnails")[-2].get("url"),
             "modified_date": sanitized_info.get("modified_date"),
@@ -36,7 +35,6 @@ def playlist_info(id):
             "channel_url": sanitized_info.get("channel_url"),
             "type": "playlist",
             "videos": videos,
-            "lookup_timestamp": datetime.now().timestamp()
         }
         return result
 

@@ -2,7 +2,6 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qsl, unquote
 import json
 import yt_dlp
-from datetime import datetime
 
 DEFAULT_QUALITY = "1080"
 
@@ -17,7 +16,7 @@ def video_info(id, quality):
         sanitized_info = ydl.sanitize_info(info)
         result = {
             "id": sanitized_info.get("id"),
-            "webpage_url": sanitized_info.get("webpage_url"),
+            "url": sanitized_info.get("webpage_url"),
             "title": sanitized_info.get("title"),
             "thumbnail": sanitized_info.get("thumbnail"),
             "upload_date": sanitized_info.get("upload_date"),
@@ -30,7 +29,6 @@ def video_info(id, quality):
             "video_url": sanitized_info.get("requested_formats")[1].get("url"),
             "video_format": sanitized_info.get("requested_formats")[1].get("format").split(" - ")[1],
             "type": "video",
-            "lookup_timestamp": datetime.now().timestamp()
         }
         return result
 
