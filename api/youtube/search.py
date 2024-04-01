@@ -91,7 +91,7 @@ def search(query, filter, playlist_start, playlist_amount):
             result = []
             for video in sanitized_result.get("entries"):
                 # ignore youtube Shorts
-                # to filter out Shorts, the playlist_amount should be greater than 100 or it's can be []
+                # to filter out Shorts, the playlist_amount should be greater than 100 unless it's can be empty
                 if "/shorts/" in video.get("url"):
                     continue
                 result.append({
