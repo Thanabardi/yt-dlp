@@ -78,17 +78,20 @@ def search(query, filter, playlist_start, playlist_amount):
 
     # search only video
     else:
+        filter = VIDEO_FILTER
+
         ydl_opts = {"cachedir": False,
-            "extract_flat": "in_playlist",
-            "playliststart": playlist_start,
-            "playlistend": playlist_start+playlist_amount-1}
+                    "extract_flat": "in_playlist",
+                    "playliststart": playlist_start,
+                    "playlistend": playlist_start+playlist_amount-1}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(
-                f"ytsearch30:{query}", download=False)
+                f"https://www.youtube.com/results?search_query={query}&sp={filter}", download=False)
             sanitized_result = ydl.sanitize_info(info)
             result = []
             for video in sanitized_result.get("entries"):
-                # ignore youtube shorts
+                # ignore youtube Shorts
+                # to filter out Shorts, the playlist_amount should be greater than 100 or it's can be []
                 if "/shorts/" in video.get("url"):
                     continue
                 result.append({
