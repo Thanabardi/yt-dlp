@@ -21,7 +21,7 @@ def search(query, filter, playlist_start, playlist_amount):
         ydl_opts = {"cachedir": False,
                     "extract_flat": "in_playlist",
                     "playliststart": playlist_start,
-                    "playlistend": playlist_start+playlist_amount}
+                    "playlistend": playlist_start+playlist_amount-1}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(
                 f"https://www.youtube.com/results?search_query={query}&sp={filter}", download=False)
@@ -57,7 +57,7 @@ def search(query, filter, playlist_start, playlist_amount):
         ydl_opts = {"cachedir": False,
                     "extract_flat": "in_playlist",
                     "playliststart": playlist_start,
-                    "playlistend": playlist_start+playlist_amount}
+                    "playlistend": playlist_start+playlist_amount-1}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(
                 f"https://www.youtube.com/results?search_query={query}&sp={filter}", download=False)
@@ -79,7 +79,9 @@ def search(query, filter, playlist_start, playlist_amount):
     # search only video
     else:
         ydl_opts = {"cachedir": False,
-                    "extract_flat": "in_playlist"}
+            "extract_flat": "in_playlist",
+            "playliststart": playlist_start,
+            "playlistend": playlist_start+playlist_amount-1}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(
                 f"ytsearch30:{query}", download=False)
