@@ -23,11 +23,16 @@ def playlist_info(id):
                 "channel_url": video.get("channel_url"),
                 "duration": video.get("duration"),
             })
+
+        try:
+            thumbnail = sanitized_info.get("thumbnails")[-2].get("url")
+        except IndexError:
+            thumbnail = sanitized_info.get("thumbnails")[0].get("url")
         result = {
             "id": sanitized_info.get("id"),
             "url": sanitized_info.get("webpage_url"),
             "title": sanitized_info.get("title"),
-            "thumbnail": sanitized_info.get("thumbnails")[-2].get("url"),
+            "thumbnail": thumbnail,
             "modified_date": sanitized_info.get("modified_date"),
             "playlist_count": sanitized_info.get("playlist_count"),
             "channel": sanitized_info.get("channel"),

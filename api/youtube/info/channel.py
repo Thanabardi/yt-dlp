@@ -20,7 +20,7 @@ def channel_info(id, filter, playlist_start, playlist_amount):
         ydl_opts = {"cachedir": False,
                     "extract_flat": "in_playlist",
                     "playliststart": playlist_start,
-                    "playlistend": playlist_start+playlist_amount}
+                    "playlistend": playlist_start+playlist_amount-1}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(
                 f"https://www.youtube.com/channel/{id}/{filter}", download=False)
@@ -49,10 +49,17 @@ def channel_info(id, filter, playlist_start, playlist_amount):
                         "type": "playlist_info",
                     }
                     playlists.append(playlist_dict)
+
+                banner, avatar = None, None
+                for thumbnail in sanitized_info.get("thumbnails"):
+                    if thumbnail.get("id") == "banner_uncropped":
+                        banner = thumbnail.get("url")
+                    elif thumbnail.get("id") == "avatar_uncropped":
+                        avatar = thumbnail.get("url")
                 result = {
                     "id": sanitized_info.get("id"),
-                    "banner": sanitized_info.get("thumbnails")[-3].get("url"),
-                    "avatar": sanitized_info.get("thumbnails")[-2].get("url"),
+                    "banner": banner,
+                    "avatar": avatar,
                     "channel": sanitized_info.get("channel"),
                     "channel_id": sanitized_info.get("channel_id"),
                     "channel_url": sanitized_info.get("channel_url"),
@@ -86,10 +93,17 @@ def channel_info(id, filter, playlist_start, playlist_amount):
                     "duration": video.get("duration"),
                     "type": "video_info",
                 })
+
+            banner, avatar = None, None
+            for thumbnail in sanitized_info.get("thumbnails"):
+                if thumbnail.get("id") == "banner_uncropped":
+                    banner = thumbnail.get("url")
+                elif thumbnail.get("id") == "avatar_uncropped":
+                    avatar = thumbnail.get("url")
             result = {
                 "id": sanitized_info.get("id"),
-                "banner": sanitized_info.get("thumbnails")[-3].get("url"),
-                "avatar": sanitized_info.get("thumbnails")[-2].get("url"),
+                "banner": banner,
+                "avatar": avatar,
                 "channel": sanitized_info.get("channel"),
                 "channel_id": sanitized_info.get("channel_id"),
                 "channel_url": sanitized_info.get("channel_url"),
