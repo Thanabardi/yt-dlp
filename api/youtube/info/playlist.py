@@ -22,6 +22,7 @@ def playlist_info(id):
                 "channel_id": video.get("channel_id"),
                 "channel_url": video.get("channel_url"),
                 "duration": video.get("duration"),
+                "type": "video_info",
             })
 
         try:
